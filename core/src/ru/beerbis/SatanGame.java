@@ -21,10 +21,9 @@ public class SatanGame extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		x = (x + 5) % (Gdx.graphics.getWidth() - img.getWidth());
 		batch.begin();
+		x = (x + 5) % (Gdx.graphics.getWidth() - img.getWidth());
 		batch.draw(img, x, 0);
-		batch.draw(img, 0, 0);
 		batch.end();
 	}
 	
