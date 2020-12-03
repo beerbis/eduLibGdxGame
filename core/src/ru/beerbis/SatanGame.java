@@ -8,23 +8,24 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class SatanGame extends ApplicationAdapter {
 	SpriteBatch batch;
-	Texture img;
+	Texture img, bgImage;
 	int x = 0;
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture("badlogic.jpg");
+		bgImage = new Texture("background.jpg");
 	}
 
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		x = (x + 5) % (Gdx.graphics.getWidth() - img.getWidth());
 		batch.begin();
+		batch.draw(bgImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		x = (x + 5) % (Gdx.graphics.getWidth() - img.getWidth());
 		batch.draw(img, x, 0);
-		batch.draw(img, 0, 0);
 		batch.end();
 	}
 	
@@ -32,5 +33,6 @@ public class SatanGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		img.dispose();
+		bgImage.dispose();
 	}
 }
