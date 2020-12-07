@@ -1,38 +1,18 @@
 package ru.beerbis;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class SatanGame extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img, bgImage;
-	int x = 0;
-	
-	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		bgImage = new Texture("background.jpg");
-	}
+import ru.beerbis.scenes.TheOneScene;
+
+public class SatanGame extends Game {
 
 	@Override
-	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		batch.draw(bgImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		x = (x + 5) % (Gdx.graphics.getWidth() - img.getWidth());
-		batch.draw(img, x, 0);
-		batch.end();
-	}
-	
-	@Override
-	public void dispose () {
-		batch.dispose();
-		img.dispose();
-		bgImage.dispose();
+	public void create () {
+		setScreen(new TheOneScene());
 	}
 }
