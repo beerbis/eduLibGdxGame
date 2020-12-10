@@ -11,8 +11,8 @@ import ru.beerbis.Sprite;
 import ru.beerbis.movements.SimpleDirectMovement;
 
 public class TheOneScene extends BasicScene {
-    private Texture bgImage;
-    private Sprite theFace;
+    private Texture bgImage = new Texture("background.jpg");
+    private Sprite theFace = new Sprite(new Texture("badlogic.jpg"), 0.3f, 0.3f);;
 
     @Override
     public boolean touchDown(Vector2 screenPos, int pointer, int button) {
@@ -25,18 +25,10 @@ public class TheOneScene extends BasicScene {
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw(bgImage, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
+        batch.draw(bgImage, worldBounds.getLeft(), worldBounds.getBottom(), worldBounds.getWidth(), worldBounds.getHeight());
         theFace.move();
         theFace.draw(batch);
         batch.end();
-    }
-
-    @Override
-    public void show() {
-        super.show();
-        theFace = new Sprite(new Texture("badlogic.jpg"));
-        bgImage = new Texture("background.jpg");
     }
 
     @Override

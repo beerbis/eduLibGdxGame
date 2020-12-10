@@ -9,21 +9,19 @@ import java.util.function.Function;
 
 public class Sprite {
     final Texture img;
-    final Vector2 centerOffset;
+    public final float width;
+    public final float height;
     public final Vector2 position = new Vector2(0, 0);
     private BasicMoving moving;
 
-    public Sprite(Texture img) {
-        this(img, img.getWidth() / 2, img.getHeight() / 2);
-    }
-
-    public Sprite(Texture img, int centerX, int centerY) {
+    public Sprite(Texture img, float width, float height) {
         this.img = img;
-        this.centerOffset = new Vector2(centerX, centerY);
+        this.width = width;
+        this.height = height;
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(img, position.x - centerOffset.x, position.y - centerOffset.y);
+        batch.draw(img, position.x, position.y, width, height);
     }
 
     public void setMovement(BasicMoving moving) {
