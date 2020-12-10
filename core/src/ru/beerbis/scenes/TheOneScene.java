@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.beerbis.Background;
 import ru.beerbis.BasicScene;
 import ru.beerbis.Sprite;
 import ru.beerbis.math.Rect;
@@ -15,6 +16,7 @@ public class TheOneScene extends BasicScene {
     private Texture bgImage = new Texture("background.jpg");
     private Texture faceImage = new Texture("badlogic.jpg");
     private Sprite theFace = new Sprite(faceImage, 0.3f);
+    private Sprite background = new Background(bgImage);
 
     @Override
     public boolean touchDown(Vector2 screenPos, int pointer, int button) {
@@ -30,7 +32,7 @@ public class TheOneScene extends BasicScene {
         theFace.move();
 
         batch.begin();
-        batch.draw(bgImage, worldBounds.getLeft(), worldBounds.getBottom(), worldBounds.getWidth(), worldBounds.getHeight());
+        background.draw(batch);
         theFace.draw(batch);
         batch.end();
     }
@@ -38,6 +40,7 @@ public class TheOneScene extends BasicScene {
     @Override
     public void resize(Rect worldBounds) {
         theFace.resize(worldBounds);
+        background.resize(worldBounds);
     }
 
     @Override
