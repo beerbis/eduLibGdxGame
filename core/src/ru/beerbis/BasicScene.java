@@ -42,7 +42,7 @@ public abstract class BasicScene implements Screen, InputProcessor {
         resize(worldBounds);
     }
 
-    private void resize(Rect worldBounds) {}
+    public void resize(Rect worldBounds) {}
 
     @Override
     public void pause() {}

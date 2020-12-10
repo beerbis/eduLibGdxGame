@@ -8,15 +8,17 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.BasicScene;
 import ru.beerbis.Sprite;
+import ru.beerbis.math.Rect;
 import ru.beerbis.movements.SimpleDirectMovement;
 
 public class TheOneScene extends BasicScene {
     private Texture bgImage = new Texture("background.jpg");
-    private Sprite theFace = new Sprite(new Texture("badlogic.jpg"), 0.3f, 0.3f);;
+    private Texture faceImage = new Texture("badlogic.jpg");
+    private Sprite theFace = new Sprite(faceImage, 0.3f);
 
     @Override
     public boolean touchDown(Vector2 screenPos, int pointer, int button) {
-        theFace.setMovement(new SimpleDirectMovement(screenPos, theFace.position, 3f, Gdx.graphics.getFramesPerSecond()));
+        theFace.setMovement(new SimpleDirectMovement(screenPos, theFace.pos, 3f, Gdx.graphics.getFramesPerSecond()));
         return true;
     }
 
@@ -24,17 +26,24 @@ public class TheOneScene extends BasicScene {
     public void render(float delta) {
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        theFace.move();
+
         batch.begin();
         batch.draw(bgImage, worldBounds.getLeft(), worldBounds.getBottom(), worldBounds.getWidth(), worldBounds.getHeight());
-        theFace.move();
         theFace.draw(batch);
         batch.end();
     }
 
     @Override
+    public void resize(Rect worldBounds) {
+        theFace.resize(worldBounds);
+    }
+
+    @Override
     public void dispose() {
         super.dispose();
-        theFace.dispose();
+        faceImage.dispose();
         bgImage.dispose();
     }
 }
