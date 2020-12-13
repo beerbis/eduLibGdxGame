@@ -1,4 +1,4 @@
-package ru.beerbis.prite;
+package ru.beerbis.sprite;
 
 import com.badlogic.gdx.graphics.Texture;
 

@@ -8,6 +8,6 @@ public class SatanGame extends Game {
 
 	@Override
 	public void create () {
-		setScreen(new MainMenuScene());
+		setScreen(new MainMenuScene(this));
 	}
 }

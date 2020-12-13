@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.beerbis.base.BasicMoving;
 import ru.beerbis.math.Rect;
 
 public class Sprite extends Rect {
-    protected static final float angle = 0;
-    protected static final float scale = 1;
+    protected static final float SCALE_ONE = 1f;
+
+    protected float angle = 0;
+    protected float scale = SCALE_ONE;
     private TextureRegion[] regions;
     protected int frame;
 
