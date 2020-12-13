@@ -10,17 +10,18 @@ import ru.beerbis.base.BasicScene;
 import ru.beerbis.base.Sprite;
 import ru.beerbis.math.Rect;
 import ru.beerbis.movements.SimpleDirectMovement;
+import ru.beerbis.prite.Face;
 
-public class TheOneScene extends BasicScene {
+public class MainMenuScene extends BasicScene {
     private Texture bgImage = new Texture("textures\\bg.png");
     private Texture faceImage = new Texture("badlogic.jpg");
-    private Sprite theFace = new Sprite(faceImage, 0.3f);
+    private Sprite theFace = new Face(faceImage, 0.3f);
     private Sprite background = new Background(bgImage);
 
     @Override
     public boolean touchDown(Vector2 screenPos, int pointer, int button) {
-        theFace.setMovement(new SimpleDirectMovement(screenPos, theFace.pos, 3f, Gdx.graphics.getFramesPerSecond()));
-        return true;
+        theFace.touchDown(screenPos, pointer, button);
+        return false;
     }
 
     @Override
@@ -28,7 +29,7 @@ public class TheOneScene extends BasicScene {
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        theFace.move();
+        theFace.update(delta);
 
         batch.begin();
         background.draw(batch);
