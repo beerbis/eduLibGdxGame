@@ -1,4 +1,4 @@
-package ru.beerbis;
+package ru.beerbis.base;
 
 import com.badlogic.gdx.math.Vector2;
 

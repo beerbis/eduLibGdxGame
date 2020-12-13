@@ -2,7 +2,7 @@ package ru.beerbis.movements;
 
 import com.badlogic.gdx.math.Vector2;
 
-import ru.beerbis.BasicMoving;
+import ru.beerbis.base.BasicMoving;
 
 public class SimpleDirectMovement implements BasicMoving {
     Vector2 destination;

@@ -1,13 +1,10 @@
-package ru.beerbis;
+package ru.beerbis.base;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import ru.beerbis.base.BasicMoving;
 import ru.beerbis.math.Rect;
 
 public class Sprite extends Rect {

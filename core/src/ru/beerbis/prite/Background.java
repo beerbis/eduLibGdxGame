@@ -1,7 +1,8 @@
-package ru.beerbis;
+package ru.beerbis.prite;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import ru.beerbis.base.Sprite;
 import ru.beerbis.math.Rect;
 
 public class Background extends Sprite {
