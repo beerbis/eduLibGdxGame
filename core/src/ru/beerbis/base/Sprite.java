@@ -21,6 +21,11 @@ public class Sprite extends Rect {
         setHeightProportion(height);
     }
 
+    public Sprite(TextureRegion[] regions, float height) {
+        this.regions = regions;
+        setHeightProportion(height);
+    }
+
     public Sprite(Texture img, float height) {
         this(new TextureRegion(img), height);
     }
@@ -47,4 +52,7 @@ public class Sprite extends Rect {
     public void touchDown(Vector2 touch, int pointer, int button) {}
     public void touchUp(Vector2 touch, int pointer, int button) {}
     public void touchDragged(Vector2 touch, int pointer, int button) {}
+
+    public void keyDown(int keycode){}
+    public void keyUp(int keycode) {}
 }
