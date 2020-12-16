@@ -85,6 +85,12 @@ public class GameScene extends BasicScene {
         return super.touchUp(touch, pointer, button);
     }
 
+    @Override
+    public boolean touchDragged(Vector2 screenPos, int pointer) {
+        mainShip.touchDragged(screenPos, pointer);
+        return super.touchDragged(screenPos, pointer);
+    }
+
     private void update(float delta) {
         for (Star star : stars) {
             star.update(delta);

@@ -19,6 +19,7 @@ public class MainShip extends Sprite {
     private static final Vector2 SPEED_ZERO = new Vector2(0, 0);
     private static final Vector2 BULLET_SPEED = new Vector2(0, 0.5f);
     private static final float BULLET_HEIGHT = 0.01f;
+    private static final float SHOOTING_POINT_DELAY = 0.07f;
 
     private static final float[] STRIKE_BLINK_DELAYS = {0.100f, 0.100f};
     private static final int STRIKE_BLINK_COUNT = 6;
@@ -33,6 +34,7 @@ public class MainShip extends Sprite {
     private int rightPointer = NO_POINTER;
     private BulletPool bulletPool;
     private final TextureRegion bulletRegion;
+    private float shootingPointDelay;
 
     public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2, HEIGHT);
@@ -74,6 +76,8 @@ public class MainShip extends Sprite {
             setLeft(worldBounds.getLeft());
             stop();
         }
+
+        shootingPointDelay -= shootingPointDelay >= deltaTime ? deltaTime : shootingPointDelay;
     }
 
     @Override
@@ -106,6 +110,14 @@ public class MainShip extends Sprite {
             } else {
                 stop();
             }
+        }
+    }
+
+    @Override
+    public void touchDragged(Vector2 touch, int pointer) {
+        if (shootingPointDelay == 0) {
+            shootingPointDelay = SHOOTING_POINT_DELAY;
+            shoot();
         }
     }
 
