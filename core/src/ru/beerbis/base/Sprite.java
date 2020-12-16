@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.math.Rect;
+import ru.beerbis.utils.Regions;
 
 public class Sprite extends Rect {
     protected static final float SCALE_ONE = 1f;
@@ -28,6 +29,10 @@ public class Sprite extends Rect {
 
     public Sprite(Texture img, float height) {
         this(new TextureRegion(img), height);
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames, float height) {
+        this(Regions.split(region, rows, cols, frames), height);
     }
 
     public final void draw(SpriteBatch batch) {

@@ -1,5 +1,6 @@
 package ru.beerbis.sprite;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -7,9 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import ru.beerbis.base.Sprite;
 import ru.beerbis.math.Rect;
 
-public class Ship extends Sprite {
-    private static final int KEY_RIGHT = 22;
-    private static final int KEY_LEFT = 21;
+public class MainShip extends Sprite {
+    private static final float HEIGHT = 0.15f;
+    private static final float BOTTOM_MARGIN = - 0.5f + 0.05f;
+
     private static final Vector2 SPEED_KEY_RIGHT =  new Vector2(0.1f, 0);
     private static final Vector2 SPEED_KEY_LEFT = new Vector2(-0.1f, 0);
     private static final Vector2 SPEED_ZERO = new Vector2(0, 0);
@@ -20,22 +22,13 @@ public class Ship extends Sprite {
     private int blinkCounter;
     private float blinkDelay;
     private Vector2 speed = new Vector2();
-    private int currentKey;
+    private boolean pressedRight;
+    private boolean pressedLeft;
     private Vector2 tmp = new Vector2();
 
-    public static Ship newShip(TextureAtlas atlas) {
-        TextureRegion r = atlas.findRegion("main_ship");
-        TextureRegion[][] rs = r.split(r.getRegionWidth() / 2, r.getRegionHeight());
-
-        //прямо беда какая-то, `super()` можно только первой строкой вызывать, а надо предрассчитать
-        //араметры для него... как делать в таких случаях я даже не знаю.
-        Ship ship = new Ship(rs[0], 0.1f);
-        ship.pos.set(0, -0.4f);
-        return ship;
-    }
-
-    private Ship(TextureRegion[] regions, float height) {
-        super(regions, height);
+    public MainShip(TextureAtlas atlas) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2, HEIGHT);
+        setBottom(BOTTOM_MARGIN);
     }
 
     public void strike() {
@@ -75,17 +68,44 @@ public class Ship extends Sprite {
 
     @Override
     public void keyDown(int keycode) {
-        if (keycode == KEY_LEFT || keycode == KEY_RIGHT) {
-            currentKey = keycode;
-            speed.set(keycode == KEY_LEFT ? SPEED_KEY_LEFT : SPEED_KEY_RIGHT);
+        switch (keycode) {
+            case Input.Keys.RIGHT:
+            case Input.Keys.D:
+                pressedRight = true;
+                moveRight();
+                break;
+            case Input.Keys.LEFT:
+            case Input.Keys.A:
+                pressedLeft = true;
+                moveLeft();
+                break;
         }
     }
 
     @Override
     public void keyUp(int keycode) {
-        if (keycode == currentKey) {
-            currentKey = 0;
-            speed.set(SPEED_ZERO);
+        switch (keycode) {
+            case Input.Keys.RIGHT:
+            case Input.Keys.D:
+                pressedRight = false;
+                if (pressedLeft) {
+                    moveLeft();
+                } else {
+                    stop();
+                }
+                break;
+            case Input.Keys.LEFT:
+            case Input.Keys.A:
+                pressedLeft = false;
+                if (pressedRight) {
+                    moveRight();
+                } else {
+                    stop();
+                }
         }
     }
+
+    private void moveLeft()     { speed.set(SPEED_KEY_LEFT);    }
+    private void moveRight()    { speed.set(SPEED_KEY_RIGHT);   }
+    private void stop()         { speed.set(SPEED_ZERO);        }
 }
