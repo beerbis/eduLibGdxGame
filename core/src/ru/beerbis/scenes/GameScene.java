@@ -1,6 +1,7 @@
 package ru.beerbis.scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -24,6 +25,7 @@ public class GameScene extends BasicScene {
     private Star[] stars;
     BulletPool bulletPool = new BulletPool();
     private MainShip mainShip = new MainShip(atlas, bulletPool);
+    private Music bgMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds\\music.mp3"));
 
     @Override
     public void show() {
@@ -33,6 +35,10 @@ public class GameScene extends BasicScene {
         for (int i = 0; i < STAR_COUNT; i++) {
             stars[i] = new Star(atlas);
         }
+
+        bgMusic.setLooping(true);
+        bgMusic.setVolume(0.2f);
+        bgMusic.play();
     }
 
     @Override

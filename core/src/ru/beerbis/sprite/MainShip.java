@@ -1,6 +1,8 @@
 package ru.beerbis.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -24,6 +26,8 @@ public class MainShip extends Sprite {
     private static final float[] STRIKE_BLINK_DELAYS = {0.100f, 0.100f};
     private static final int STRIKE_BLINK_COUNT = 6;
     private Rect worldBounds;
+
+    private Sound shootingSound = Gdx.audio.newSound(Gdx.files.internal("sounds\\bullet.wav"));
 
     private int blinkCounter;
     private float blinkDelay;
@@ -170,5 +174,7 @@ public class MainShip extends Sprite {
     private void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, BULLET_SPEED, BULLET_HEIGHT, worldBounds, 1);
+
+        shootingSound.play(0.1f, 1, pos.x / worldBounds.getHalfWidth());
     }
 }
