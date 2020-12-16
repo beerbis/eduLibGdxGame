@@ -65,10 +65,15 @@ public class MainShip extends Sprite {
             }
         }
 
-        tmp.set(pos);
-        tmp.mulAdd(speed, deltaTime);
-        if (worldBounds.isMe(tmp))
-            pos.set(tmp);
+        pos.mulAdd(speed, deltaTime);
+        if (getRight() > worldBounds.getRight()) {
+            setRight(worldBounds.getRight());
+            stop();
+        }
+        if (getLeft() < worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
+            stop();
+        }
     }
 
     @Override
