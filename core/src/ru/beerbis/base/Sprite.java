@@ -13,9 +13,11 @@ public class Sprite extends Rect {
 
     protected float angle = 0;
     protected float scale = SCALE_ONE;
-    private TextureRegion[] regions;
+    protected TextureRegion[] regions;
     protected int frame;
+    private boolean destroyed;
 
+    public Sprite() {}
     public Sprite(TextureRegion region, float height) {
         regions = new TextureRegion[1];
         regions[0] = region;
@@ -51,6 +53,10 @@ public class Sprite extends Rect {
                 height * regions[frame].getRegionWidth() / (float) regions[frame].getRegionHeight(),
                 height);
     }
+
+    public void destroy()           { destroyed = true; }
+    public boolean isDestroyed()    { return destroyed; }
+    public void flushDestroy()      { destroyed = false; }
 
     public void resize(Rect worldBounds) {}
     public void update(float deltaTime) {};
