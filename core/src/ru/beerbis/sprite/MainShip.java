@@ -2,10 +2,12 @@ package ru.beerbis.sprite;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.base.Sprite;
 import ru.beerbis.math.Rect;
+import ru.beerbis.pool.BulletPool;
 
 public class MainShip extends Sprite {
     private static final float HEIGHT = 0.15f;
@@ -15,6 +17,9 @@ public class MainShip extends Sprite {
     private static final Vector2 SPEED_KEY_RIGHT =  new Vector2(0.1f, 0);
     private static final Vector2 SPEED_KEY_LEFT = new Vector2(-0.1f, 0);
     private static final Vector2 SPEED_ZERO = new Vector2(0, 0);
+    private static final Vector2 BULLET_SPEED = new Vector2(0, 0.5f);
+    private static final float BULLET_HEIGHT = 0.01f;
+
     private static final float[] STRIKE_BLINK_DELAYS = {0.100f, 0.100f};
     private static final int STRIKE_BLINK_COUNT = 6;
     private Rect worldBounds;
@@ -26,11 +31,14 @@ public class MainShip extends Sprite {
     private boolean pressedLeft;
     private int leftPointer = NO_POINTER;
     private int rightPointer = NO_POINTER;
-    private Vector2 tmp = new Vector2();
+    private BulletPool bulletPool;
+    private final TextureRegion bulletRegion;
 
-    public MainShip(TextureAtlas atlas) {
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
         super(atlas.findRegion("main_ship"), 1, 2, 2, HEIGHT);
         setBottom(BOTTOM_MARGIN);
+        this.bulletPool = bulletPool;
+        bulletRegion = atlas.findRegion("bulletMainShip");
     }
 
     public void strike() {
@@ -109,6 +117,9 @@ public class MainShip extends Sprite {
                 pressedLeft = true;
                 moveLeft();
                 break;
+            case Input.Keys.SPACE:
+                shoot();
+                break;
         }
     }
 
@@ -138,4 +149,9 @@ public class MainShip extends Sprite {
     private void moveLeft()     { speed.set(SPEED_KEY_LEFT);    }
     private void moveRight()    { speed.set(SPEED_KEY_RIGHT);   }
     private void stop()         { speed.set(SPEED_ZERO);        }
+
+    private void shoot() {
+        Bullet bullet = bulletPool.obtain();
+        bullet.set(this, bulletRegion, pos, BULLET_SPEED, BULLET_HEIGHT, worldBounds, 1);
+    }
 }

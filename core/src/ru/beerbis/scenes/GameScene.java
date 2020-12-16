@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.base.BasicScene;
 import ru.beerbis.math.Rect;
+import ru.beerbis.pool.BulletPool;
 import ru.beerbis.sprite.Background;
 import ru.beerbis.sprite.MainShip;
 import ru.beerbis.sprite.Star;
@@ -21,7 +22,8 @@ public class GameScene extends BasicScene {
 
     private TextureAtlas atlas = new TextureAtlas("textures/mainAtlas.tpack");;
     private Star[] stars;
-    private MainShip mainShip;
+    BulletPool bulletPool = new BulletPool();
+    private MainShip mainShip = new MainShip(atlas, bulletPool);
 
     @Override
     public void show() {
@@ -31,13 +33,13 @@ public class GameScene extends BasicScene {
         for (int i = 0; i < STAR_COUNT; i++) {
             stars[i] = new Star(atlas);
         }
-        mainShip = new MainShip(atlas);
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        freeAllDestroyed();
         draw();
     }
 
@@ -55,6 +57,7 @@ public class GameScene extends BasicScene {
     public void dispose() {
         bg.dispose();
         atlas.dispose();
+        bulletPool.dispose();
         super.dispose();
     }
 
@@ -87,6 +90,11 @@ public class GameScene extends BasicScene {
             star.update(delta);
         }
         mainShip.update(delta);
+        bulletPool.updateActiveObjects(delta);
+    }
+
+    private void freeAllDestroyed() {
+        bulletPool.freeAllDestroyedActiveObjects();
     }
 
     private void draw() {
@@ -95,6 +103,7 @@ public class GameScene extends BasicScene {
         batch.begin();
         background.draw(batch);
         for (Star star : stars) star.draw(batch);
+        bulletPool.drawActiveObjects(batch);
         mainShip.draw(batch);
         batch.end();
     }
