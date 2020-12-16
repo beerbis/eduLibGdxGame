@@ -7,8 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.base.BasicScene;
+import ru.beerbis.base.Sprite;
 import ru.beerbis.math.Rect;
 import ru.beerbis.sprite.Background;
+import ru.beerbis.sprite.Ship;
 import ru.beerbis.sprite.Star;
 
 public class GameScene extends BasicScene {
@@ -20,6 +22,7 @@ public class GameScene extends BasicScene {
 
     private TextureAtlas atlas = new TextureAtlas("textures/mainAtlas.tpack");;
     private Star[] stars;
+    private Ship ship;
 
     @Override
     public void show() {
@@ -29,6 +32,7 @@ public class GameScene extends BasicScene {
         for (int i = 0; i < STAR_COUNT; i++) {
             stars[i] = new Star(atlas);
         }
+        ship = Ship.newShip(atlas);
     }
 
     @Override
@@ -45,6 +49,7 @@ public class GameScene extends BasicScene {
         for (Star star : stars) {
             star.resize(worldBounds);
         }
+        ship.resize(worldBounds);
     }
 
     @Override
@@ -56,16 +61,19 @@ public class GameScene extends BasicScene {
 
     @Override
     public boolean keyDown(int keycode) {
+        ship.keyDown(keycode);
         return super.keyDown(keycode);
     }
 
     @Override
     public boolean keyUp(int keycode) {
+        ship.keyUp(keycode);
         return super.keyUp(keycode);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
+        ship.touchDown(touch, pointer, button);
         return super.touchDown(touch, pointer, button);
     }
 
@@ -78,6 +86,7 @@ public class GameScene extends BasicScene {
         for (Star star : stars) {
             star.update(delta);
         }
+        ship.update(delta);
     }
 
     private void draw() {
@@ -85,9 +94,8 @@ public class GameScene extends BasicScene {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-        for (Star star : stars) {
-            star.draw(batch);
-        }
+        for (Star star : stars) star.draw(batch);
+        ship.draw(batch);
         batch.end();
     }
 }
