@@ -45,6 +45,7 @@ public class MainShip extends Sprite {
         setBottom(BOTTOM_MARGIN);
         this.bulletPool = bulletPool;
         bulletRegion = atlas.findRegion("bulletMainShip");
+        shootingSound.play(0f, 1f, 0f);
     }
 
     public void strike() {
