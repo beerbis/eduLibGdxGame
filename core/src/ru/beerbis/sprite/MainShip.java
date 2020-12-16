@@ -2,7 +2,6 @@ package ru.beerbis.sprite;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.base.Sprite;
@@ -12,6 +11,7 @@ public class MainShip extends Sprite {
     private static final float HEIGHT = 0.15f;
     private static final float BOTTOM_MARGIN = - 0.5f + 0.05f;
 
+    private static final int NO_POINTER = -1;
     private static final Vector2 SPEED_KEY_RIGHT =  new Vector2(0.1f, 0);
     private static final Vector2 SPEED_KEY_LEFT = new Vector2(-0.1f, 0);
     private static final Vector2 SPEED_ZERO = new Vector2(0, 0);
@@ -24,6 +24,8 @@ public class MainShip extends Sprite {
     private Vector2 speed = new Vector2();
     private boolean pressedRight;
     private boolean pressedLeft;
+    private int leftPointer = NO_POINTER;
+    private int rightPointer = NO_POINTER;
     private Vector2 tmp = new Vector2();
 
     public MainShip(TextureAtlas atlas) {
@@ -64,6 +66,34 @@ public class MainShip extends Sprite {
     @Override
     public void touchDown(Vector2 touch, int pointer, int button) {
         strike();
+        if (touch.x < worldBounds.pos.x) {
+            if (leftPointer != NO_POINTER) return;
+            leftPointer = pointer;
+            moveLeft();
+        } else {
+            if (rightPointer != NO_POINTER) return;
+            rightPointer = pointer;
+            moveRight();
+        }
+    }
+
+    @Override
+    public void touchUp(Vector2 touch, int pointer, int button) {
+        if (pointer == leftPointer) {
+            leftPointer = NO_POINTER;
+            if (rightPointer != NO_POINTER) {
+                moveRight();
+            } else {
+                stop();
+            }
+        } else if (pointer == rightPointer) {
+            rightPointer = NO_POINTER;
+            if (leftPointer != NO_POINTER) {
+                moveLeft();
+            } else {
+                stop();
+            }
+        }
     }
 
     @Override

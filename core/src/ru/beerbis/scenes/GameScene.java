@@ -78,6 +78,7 @@ public class GameScene extends BasicScene {
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
+        mainShip.touchUp(touch, pointer, button);
         return super.touchUp(touch, pointer, button);
     }
 
