@@ -62,7 +62,7 @@ public class Sprite extends Rect {
     public void update(float deltaTime) {};
     public void touchDown(Vector2 touch, int pointer, int button) {}
     public void touchUp(Vector2 touch, int pointer, int button) {}
-    public void touchDragged(Vector2 touch, int pointer, int button) {}
+    public void touchDragged(Vector2 touch, int pointer) {}
 
     public void keyDown(int keycode){}
     public void keyUp(int keycode) {}
