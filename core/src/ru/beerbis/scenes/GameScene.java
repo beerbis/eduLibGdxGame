@@ -11,9 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 import ru.beerbis.base.BasicScene;
 import ru.beerbis.math.Rect;
 import ru.beerbis.pool.BulletPool;
+import ru.beerbis.pool.EnemyPool;
 import ru.beerbis.sprite.Background;
 import ru.beerbis.sprite.MainShip;
 import ru.beerbis.sprite.Star;
+import ru.beerbis.utils.EnemyEmitter;
 
 public class GameScene extends BasicScene {
 
@@ -25,9 +27,13 @@ public class GameScene extends BasicScene {
     private TextureAtlas atlas = new TextureAtlas("textures/mainAtlas.tpack");;
     private Star[] stars;
     BulletPool bulletPool = new BulletPool();
+
     private Music bgMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds\\music.mp3"));
-    private Sound shootingSound = Gdx.audio.newSound(Gdx.files.internal("sounds\\bullet.wav"));
-    private MainShip mainShip = new MainShip(atlas, bulletPool, shootingSound);
+    private Sound bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds\\music.mp3"));
+
+    private MainShip mainShip = new MainShip(atlas, bulletPool);
+    private EnemyPool enemyPool;
+    private EnemyEmitter enemyEmitter;
 
     @Override
     public void show() {
@@ -38,11 +44,13 @@ public class GameScene extends BasicScene {
             stars[i] = new Star(atlas);
         }
 
+        enemyPool = new EnemyPool(bulletPool, worldBounds);
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
+        enemyEmitter = new EnemyEmitter(atlas, worldBounds, bulletSound, enemyPool);
+
         bgMusic.setLooping(true);
         bgMusic.setVolume(0.2f);
         bgMusic.play();
-
-        this.shootingSound.play(0f, 1f, 0f);
     }
 
     @Override
@@ -68,8 +76,12 @@ public class GameScene extends BasicScene {
         bg.dispose();
         atlas.dispose();
         bulletPool.dispose();
+        enemyPool.dispose();
+
+        bulletSound.dispose();
         bgMusic.dispose();
-        shootingSound.dispose();
+
+        mainShip.dispose();
         super.dispose();
     }
 
@@ -107,12 +119,15 @@ public class GameScene extends BasicScene {
         for (Star star : stars) {
             star.update(delta);
         }
-        mainShip.update(delta);
         bulletPool.updateActiveObjects(delta);
+        mainShip.update(delta);
+        enemyPool.updateActiveObjects(delta);
+        enemyEmitter.generate(delta);
     }
 
     private void freeAllDestroyed() {
         bulletPool.freeAllDestroyedActiveObjects();
+        enemyPool.freeAllDestroyedActiveObjects();
     }
 
     private void draw() {
@@ -122,6 +137,7 @@ public class GameScene extends BasicScene {
         background.draw(batch);
         for (Star star : stars) star.draw(batch);
         bulletPool.drawActiveObjects(batch);
+        enemyPool.drawActiveObjects(batch);
         mainShip.draw(batch);
         batch.end();
     }

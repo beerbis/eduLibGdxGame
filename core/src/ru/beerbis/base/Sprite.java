@@ -37,6 +37,10 @@ public class Sprite extends Rect {
         this(Regions.split(region, rows, cols, frames), height);
     }
 
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        regions = Regions.split(region, rows, cols, frames);
+    }
+
     public final void draw(SpriteBatch batch) {
         batch.draw(
                 regions[frame],

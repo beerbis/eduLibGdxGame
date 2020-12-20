@@ -1,77 +1,55 @@
 package ru.beerbis.sprite;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.beerbis.base.Sprite;
+import ru.beerbis.base.Ship;
 import ru.beerbis.math.Rect;
 import ru.beerbis.pool.BulletPool;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
+
+    private static final int HP = 100;
+    private static final float RELOAD_INTERVAL = 0.2f;
+
     private static final float HEIGHT = 0.15f;
-    private static final float BOTTOM_MARGIN = - 0.5f + 0.05f;
+    private static final float BOTTOM_MARGIN = 0.05f;
 
-    private static final int NO_POINTER = -1;
-    private static final Vector2 SPEED_KEY_RIGHT =  new Vector2(0.1f, 0);
-    private static final Vector2 SPEED_KEY_LEFT = new Vector2(-0.1f, 0);
-    private static final Vector2 SPEED_ZERO = new Vector2(0, 0);
-    private static final Vector2 BULLET_SPEED = new Vector2(0, 0.5f);
-    private static final float BULLET_HEIGHT = 0.01f;
-    private static final float SHOOTING_POINT_DELAY = 0.07f;
+    private static final int INVALID_POINTER = -1;
 
-    private static final float[] STRIKE_BLINK_DELAYS = {0.100f, 0.100f};
-    private static final int STRIKE_BLINK_COUNT = 6;
-    private Rect worldBounds;
-
-    private final Sound shootingSound;
-
-    private int blinkCounter;
-    private float blinkDelay;
-    private Vector2 speed = new Vector2();
-    private boolean pressedRight;
     private boolean pressedLeft;
-    private int leftPointer = NO_POINTER;
-    private int rightPointer = NO_POINTER;
-    private BulletPool bulletPool;
-    private final TextureRegion bulletRegion;
-    private float shootingPointDelay;
+    private boolean pressedRight;
 
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool, Sound shootingSound) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2, HEIGHT);
-        setBottom(BOTTOM_MARGIN);
-        this.shootingSound = shootingSound;
-        this.bulletPool = bulletPool;
+    private int leftPointer = INVALID_POINTER;
+    private int rightPointer = INVALID_POINTER;
+
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2, bulletPool);
         bulletRegion = atlas.findRegion("bulletMainShip");
-    }
-
-    public void strike() {
-        blinkDelay = 0;
-        blinkCounter = STRIKE_BLINK_COUNT;
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
+        bulletV = new Vector2(0, 0.5f);
+        bulletPos = new Vector2();
+        bulletHeight = 0.01f;
+        damage = 1;
+        v = new Vector2();
+        v0 = new Vector2(0.5f, 0);
+        reloadInterval = RELOAD_INTERVAL;
+        hp = HP;
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        super.resize(worldBounds);
         this.worldBounds = worldBounds;
+        setHeightProportion(HEIGHT);
+        setBottom(worldBounds.getBottom() + BOTTOM_MARGIN);
     }
 
     @Override
-    public void update(float deltaTime) {
-        super.update(deltaTime);
-
-        if (blinkCounter > 0) {
-            blinkDelay -= deltaTime;
-            if (blinkDelay <= 0) {
-                blinkCounter--;
-                frame = blinkCounter % 2;
-                blinkDelay = STRIKE_BLINK_DELAYS[frame];
-            }
-        }
-
-        pos.mulAdd(speed, deltaTime);
+    public void update(float delta) {
+       super.update(delta);
+        bulletPos.set(pos.x, pos.y + getHalfHeight());
         if (getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
             stop();
@@ -80,52 +58,8 @@ public class MainShip extends Sprite {
             setLeft(worldBounds.getLeft());
             stop();
         }
-
-        shootingPointDelay -= shootingPointDelay >= deltaTime ? deltaTime : shootingPointDelay;
     }
 
-    @Override
-    public void touchDown(Vector2 touch, int pointer, int button) {
-        strike();
-        if (touch.x < worldBounds.pos.x) {
-            if (leftPointer != NO_POINTER) return;
-            leftPointer = pointer;
-            moveLeft();
-        } else {
-            if (rightPointer != NO_POINTER) return;
-            rightPointer = pointer;
-            moveRight();
-        }
-    }
-
-    @Override
-    public void touchUp(Vector2 touch, int pointer, int button) {
-        if (pointer == leftPointer) {
-            leftPointer = NO_POINTER;
-            if (rightPointer != NO_POINTER) {
-                moveRight();
-            } else {
-                stop();
-            }
-        } else if (pointer == rightPointer) {
-            rightPointer = NO_POINTER;
-            if (leftPointer != NO_POINTER) {
-                moveLeft();
-            } else {
-                stop();
-            }
-        }
-    }
-
-    @Override
-    public void touchDragged(Vector2 touch, int pointer) {
-        if (shootingPointDelay == 0) {
-            shootingPointDelay = SHOOTING_POINT_DELAY;
-            shoot();
-        }
-    }
-
-    @Override
     public void keyDown(int keycode) {
         switch (keycode) {
             case Input.Keys.RIGHT:
@@ -138,13 +72,9 @@ public class MainShip extends Sprite {
                 pressedLeft = true;
                 moveLeft();
                 break;
-            case Input.Keys.SPACE:
-                shoot();
-                break;
         }
     }
 
-    @Override
     public void keyUp(int keycode) {
         switch (keycode) {
             case Input.Keys.RIGHT:
@@ -167,14 +97,52 @@ public class MainShip extends Sprite {
         }
     }
 
-    private void moveLeft()     { speed.set(SPEED_KEY_LEFT);    }
-    private void moveRight()    { speed.set(SPEED_KEY_RIGHT);   }
-    private void stop()         { speed.set(SPEED_ZERO);        }
-
-    private void shoot() {
-        Bullet bullet = bulletPool.obtain();
-        bullet.set(this, bulletRegion, pos, BULLET_SPEED, BULLET_HEIGHT, worldBounds, 1);
-
-        shootingSound.play(0.1f, 1, pos.x / worldBounds.getHalfWidth());
+    @Override
+    public void touchDown(Vector2 touch, int pointer, int button) {
+        if (touch.x < worldBounds.pos.x) {
+            if (leftPointer != INVALID_POINTER) return;
+            leftPointer = pointer;
+            moveLeft();
+        } else {
+            if (rightPointer != INVALID_POINTER) return;
+            rightPointer = pointer;
+            moveRight();
+        }
     }
+
+    @Override
+    public void touchUp(Vector2 touch, int pointer, int button) {
+        if (pointer == leftPointer) {
+            leftPointer = INVALID_POINTER;
+            if (rightPointer != INVALID_POINTER) {
+                moveRight();
+            } else {
+                stop();
+            }
+        } else if (pointer == rightPointer) {
+            rightPointer = INVALID_POINTER;
+            if (leftPointer != INVALID_POINTER) {
+                moveLeft();
+            } else {
+                stop();
+            }
+        }
+    }
+
+    public void dispose() {
+        bulletSound.dispose();
+    }
+
+    private void moveLeft() {
+        v.set(v0).rotate(180);
+    }
+
+    private void moveRight() {
+        v.set(v0);
+    }
+
+    private void stop() {
+        v.setZero();
+    }
+
 }
