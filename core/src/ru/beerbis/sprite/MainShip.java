@@ -48,8 +48,7 @@ public class MainShip extends Ship {
 
     @Override
     public void update(float delta) {
-       super.update(delta);
-        bulletPos.set(pos.x, pos.y + getHalfHeight());
+        super.update(delta);
         if (getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
             stop();
@@ -58,6 +57,11 @@ public class MainShip extends Ship {
             setLeft(worldBounds.getLeft());
             stop();
         }
+    }
+
+    @Override
+    protected void updateBulletPosition() {
+        bulletPos.set(pos.x, pos.y + getHalfHeight());
     }
 
     public void keyDown(int keycode) {
@@ -145,4 +149,6 @@ public class MainShip extends Ship {
         v.setZero();
     }
 
+    @Override
+    protected void blastMe() {}
 }

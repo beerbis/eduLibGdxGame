@@ -10,6 +10,15 @@ import ru.beerbis.pool.BulletPool;
 
 public class Enemy extends Ship {
 
+    private static final float WARPING_OUT_HALF_DELAY = 0.25f;
+    private static final float WARPING_OUT_DELAY = WARPING_OUT_HALF_DELAY * 2;
+    private boolean warpedOut;
+    private float warpingTimer;
+    private float warpingOutTop;
+    private float warpingOutBottom;
+    private float warpingInBottom;
+    private float warpingInTop;
+
     public Enemy(BulletPool bulletPool, Rect worldBounds) {
         super(bulletPool);
         this.worldBounds = worldBounds;
@@ -20,11 +29,33 @@ public class Enemy extends Ship {
 
     @Override
     public void update(float delta) {
+        if (!warpedOut) {
+            if (warpingTimer >= WARPING_OUT_DELAY) {
+                setHeight(warpingOutTop - warpingOutBottom);
+                setBottom(warpingOutBottom);
+                warpedOut = true;
+            } else {
+                if (warpingTimer <= WARPING_OUT_HALF_DELAY) {
+                    float slidingAmount = (warpingInBottom - warpingOutBottom) * (delta / WARPING_OUT_HALF_DELAY);
+                    this.spreadBottom(slidingAmount);
+                } else {
+                    float slidingAmount = (warpingInTop - warpingOutTop) * (delta / WARPING_OUT_HALF_DELAY);
+                    this.spreadTop(-slidingAmount);
+                }
+                warpingTimer += delta;
+                return;
+            }
+        }
+
         super.update(delta);
-        bulletPos.set(pos.x, pos.y - getHalfHeight());
         if (getBottom() < worldBounds.getBottom()) {
             destroy();
         }
+    }
+
+    @Override
+    protected void updateBulletPosition() {
+        bulletPos.set(pos.x, pos.y - getHalfHeight());
     }
 
     public void set(
@@ -49,5 +80,19 @@ public class Enemy extends Ship {
         this.reloadInterval = reloadInterval;
         this.v.set(v0);
         setHeightProportion(height);
+    }
+
+    public void warpOut(float destBottom, float destTop) {
+        warpingOutBottom = destBottom;
+        warpingOutTop = destTop;
+        warpingInBottom = getBottom();
+        warpingInTop = getTop();
+        warpingTimer = 0;
+        warpedOut = false;
+    }
+
+    @Override
+    protected void blastMe() {
+        destroy();
     }
 }

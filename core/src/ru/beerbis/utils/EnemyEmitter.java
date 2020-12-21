@@ -38,7 +38,7 @@ public class EnemyEmitter {
     private final Vector2 enemyMiddleV = new Vector2(0, -0.03f);
     private final Vector2 enemyMiddleBulletV = new Vector2(0, -0.3f);
 
-    private final Vector2 enemyBigV = new Vector2(0, -0.005f);
+    private final Vector2 enemyBigV = new Vector2(0, -0.015f);
     private final Vector2 enemyBigBulletV = new Vector2(0, -0.3f);
 
     private final Rect worldBounds;
@@ -112,8 +112,10 @@ public class EnemyEmitter {
                         ENEMY_BIG_HEIGHT
                 );
             }
-            enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() - enemy.getHalfWidth(), worldBounds.getRight() + enemy.getHalfWidth());
+            enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
             enemy.setBottom(worldBounds.getTop());
+            enemy.preloadWeapons();
+            enemy.warpOut(worldBounds.getTop() - enemy.getHeight(), worldBounds.getTop());
         }
     }
 }

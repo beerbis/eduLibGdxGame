@@ -45,11 +45,32 @@ public abstract class Ship extends Sprite {
             reloadTimer = 0f;
             shoot();
         }
+
+        applyShootingCollisions();
     }
 
     private void shoot() {
         bulletSound.play(0.1f);
         Bullet bullet = bulletPool.obtain();
+        updateBulletPosition();
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, damage);
     }
+
+    protected abstract void updateBulletPosition();
+
+    public void preloadWeapons() {
+        reloadTimer = reloadInterval;
+    }
+
+    public final void applyShootingCollisions() {
+        for (Bullet bullet: bulletPool.getActiveObjects()) {
+            if (!bullet.isDestroyed() && !bullet.isOutside(this) && bullet.getOwner() != this) {
+                hp -= bullet.getDamage();
+                bullet.destroy();
+                if (hp <= 0) blastMe();
+            }
+        }
+    }
+
+    protected abstract void blastMe();
 }

@@ -63,6 +63,18 @@ public class Rect {
         halfHeight = from.halfHeight;
     }
 
+    public void spreadBottom(float deltaHeight) {
+        float halfDelta = deltaHeight / 2;
+        pos.y -= halfDelta;
+        halfHeight += halfDelta;
+    }
+
+    public void spreadTop(float deltaHeight) {
+        float halfDelta = deltaHeight / 2;
+        pos.y += halfDelta;
+        halfHeight += halfDelta;
+    }
+
     public void setLeft(float left) {
         pos.x = left + halfWidth;
     }
