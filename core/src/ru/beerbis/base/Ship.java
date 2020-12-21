@@ -52,4 +52,8 @@ public abstract class Ship extends Sprite {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, damage);
     }
+
+    public void preloadWeapons() {
+        reloadTimer = reloadInterval;
+    }
 }
