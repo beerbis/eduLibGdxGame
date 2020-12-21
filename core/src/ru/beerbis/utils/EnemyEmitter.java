@@ -38,7 +38,7 @@ public class EnemyEmitter {
     private final Vector2 enemyMiddleV = new Vector2(0, -0.03f);
     private final Vector2 enemyMiddleBulletV = new Vector2(0, -0.3f);
 
-    private final Vector2 enemyBigV = new Vector2(0, -0.005f);
+    private final Vector2 enemyBigV = new Vector2(0, -0.015f);
     private final Vector2 enemyBigBulletV = new Vector2(0, -0.3f);
 
     private final Rect worldBounds;
