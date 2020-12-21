@@ -45,6 +45,8 @@ public abstract class Ship extends Sprite {
             reloadTimer = 0f;
             shoot();
         }
+
+        applyShootingCollisions();
     }
 
     private void shoot() {
@@ -59,4 +61,16 @@ public abstract class Ship extends Sprite {
     public void preloadWeapons() {
         reloadTimer = reloadInterval;
     }
+
+    public final void applyShootingCollisions() {
+        for (Bullet bullet: bulletPool.getActiveObjects()) {
+            if (!bullet.isDestroyed() && !bullet.isOutside(this) && bullet.getOwner() != this) {
+                hp -= bullet.getDamage();
+                bullet.destroy();
+                if (hp <= 0) blastMe();
+            }
+        }
+    }
+
+    protected abstract void blastMe();
 }

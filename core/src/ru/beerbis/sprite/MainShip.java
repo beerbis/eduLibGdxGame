@@ -149,4 +149,6 @@ public class MainShip extends Ship {
         v.setZero();
     }
 
+    @Override
+    protected void blastMe() {}
 }

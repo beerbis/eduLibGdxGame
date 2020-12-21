@@ -90,4 +90,9 @@ public class Enemy extends Ship {
         warpingTimer = 0;
         warpedOut = false;
     }
+
+    @Override
+    protected void blastMe() {
+        destroy();
+    }
 }
