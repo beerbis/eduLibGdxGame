@@ -50,8 +50,11 @@ public abstract class Ship extends Sprite {
     private void shoot() {
         bulletSound.play(0.1f);
         Bullet bullet = bulletPool.obtain();
+        updateBulletPosition();
         bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, damage);
     }
+
+    protected abstract void updateBulletPosition();
 
     public void preloadWeapons() {
         reloadTimer = reloadInterval;
