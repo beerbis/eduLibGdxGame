@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class BaseButton extends Sprite {
-    public BaseButton(TextureRegion region, float height) {
-        super(region, height);
-    }
+    protected Runnable onAction;
 
-    public BaseButton(Texture img, float height) {
-        super(img, height);
+    public BaseButton(TextureRegion region, float height) { super(region, height); }
+
+    public BaseButton(TextureRegion region, float height, Runnable onAction) {
+        super(region, height);
+        this.onAction = onAction;
     }
 
     private static final float SCALE_PRESSED = 0.9f;
@@ -34,5 +35,7 @@ public abstract class BaseButton extends Sprite {
         if (isMe(touch)) action();
     }
 
-    public abstract void action();
+    public void action() {
+        if (onAction != null) onAction.run();
+    }
 }
