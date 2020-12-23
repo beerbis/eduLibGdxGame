@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.beerbis.base.Ship;
 import ru.beerbis.math.Rect;
 import ru.beerbis.pool.BulletPool;
+import ru.beerbis.pool.ExplosionPool;
 
 public class MainShip extends Ship {
 
@@ -25,8 +26,8 @@ public class MainShip extends Ship {
     private int leftPointer = INVALID_POINTER;
     private int rightPointer = INVALID_POINTER;
 
-    public MainShip(TextureAtlas atlas, BulletPool bulletPool) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2, bulletPool);
+    public MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool) {
+        super(atlas.findRegion("main_ship"), 1, 2, 2, bulletPool, explosionPool);
         bulletRegion = atlas.findRegion("bulletMainShip");
         bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         bulletV = new Vector2(0, 0.5f);
@@ -149,6 +150,10 @@ public class MainShip extends Ship {
         v.setZero();
     }
 
-    @Override
-    protected void blastMe() {}
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > pos.y
+                || bullet.getTop() < getBottom());
+    }
 }

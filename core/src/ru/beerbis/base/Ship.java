@@ -6,9 +6,13 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.beerbis.math.Rect;
 import ru.beerbis.pool.BulletPool;
+import ru.beerbis.pool.ExplosionPool;
 import ru.beerbis.sprite.Bullet;
+import ru.beerbis.sprite.Explosion;
 
 public abstract class Ship extends Sprite {
+
+    private static final float DAMAGE_ANIMATE_INTERVAL = 0.1f;
 
     protected TextureRegion bulletRegion;
     protected Sound bulletSound;
@@ -24,17 +28,23 @@ public abstract class Ship extends Sprite {
     protected Rect worldBounds;
 
     protected float reloadInterval;
-    private float reloadTimer;
+    protected float reloadTimer;
+    private float damageAnimateTimer;
 
     private final BulletPool bulletPool;
+    private final ExplosionPool explosionPool;
 
-    public Ship(BulletPool bulletPool) {
+    public Ship(BulletPool bulletPool, ExplosionPool explosionPool) {
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
     }
 
-    public Ship(TextureRegion region, int rows, int cols, int frames, BulletPool bulletPool) {
+    public Ship(TextureRegion region, int rows, int cols, int frames, BulletPool bulletPool, ExplosionPool explosionPool) {
         super(region, rows, cols, frames);
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
+        damageAnimateTimer = DAMAGE_ANIMATE_INTERVAL;
     }
 
     @Override
@@ -45,32 +55,44 @@ public abstract class Ship extends Sprite {
             reloadTimer = 0f;
             shoot();
         }
-
-        applyShootingCollisions();
-    }
-
-    private void shoot() {
-        bulletSound.play(0.1f);
-        Bullet bullet = bulletPool.obtain();
-        updateBulletPosition();
-        bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, damage);
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= DAMAGE_ANIMATE_INTERVAL) {
+            frame = 0;
+        }
     }
 
     protected abstract void updateBulletPosition();
 
-    public void preloadWeapons() {
-        reloadTimer = reloadInterval;
+    public void blastMe() {
+        boom();
+        destroy();
     }
 
-    public final void applyShootingCollisions() {
-        for (Bullet bullet: bulletPool.getActiveObjects()) {
-            if (!bullet.isDestroyed() && !bullet.isOutside(this) && bullet.getOwner() != this) {
-                hp -= bullet.getDamage();
-                bullet.destroy();
-                if (hp <= 0) blastMe();
-            }
+    public void damage(int damage) {
+        this.hp -= damage;
+        if (hp <= 0) {
+            hp = 0;
+            blastMe();
         }
+        frame = 1;
+        damageAnimateTimer = 0f;
     }
 
-    protected abstract void blastMe();
+    public int getDamage() {
+        return damage;
+    }
+
+    private void shoot() {
+        updateBulletPosition();
+        bulletSound.play(0.1f);
+        Bullet bullet = bulletPool.obtain();
+        bullet.set(this, bulletRegion, bulletPos, bulletV, bulletHeight, worldBounds, damage);
+    }
+
+    private void boom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(this.pos, getHeight());
+    }
+
+    public abstract boolean isBulletCollision(Bullet bullet);
 }

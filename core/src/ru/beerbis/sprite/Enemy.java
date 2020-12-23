@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.beerbis.base.Ship;
 import ru.beerbis.math.Rect;
 import ru.beerbis.pool.BulletPool;
+import ru.beerbis.pool.ExplosionPool;
 
 public class Enemy extends Ship {
 
@@ -19,8 +20,8 @@ public class Enemy extends Ship {
     private float warpingInBottom;
     private float warpingInTop;
 
-    public Enemy(BulletPool bulletPool, Rect worldBounds) {
-        super(bulletPool);
+    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds) {
+        super(bulletPool, explosionPool);
         this.worldBounds = worldBounds;
         this.v = new Vector2();
         this.v0 = new Vector2();
@@ -91,8 +92,14 @@ public class Enemy extends Ship {
         warpedOut = false;
     }
 
-    @Override
-    protected void blastMe() {
-        destroy();
+    public void preloadWeapons() {
+        reloadTimer = reloadInterval * 0.85f;
+    }
+
+    public boolean isBulletCollision(Bullet bullet) {
+        return !(bullet.getRight() < getLeft()
+                || bullet.getLeft() > getRight()
+                || bullet.getBottom() > getTop()
+                || bullet.getTop() < pos.y);
     }
 }
