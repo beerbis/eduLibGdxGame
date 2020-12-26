@@ -23,6 +23,7 @@ import ru.beerbis.sprite.GameOver;
 import ru.beerbis.sprite.MainShip;
 import ru.beerbis.sprite.NewGameButton;
 import ru.beerbis.sprite.Star;
+import ru.beerbis.sprite.ParallaxStar;
 import ru.beerbis.utils.EnemyEmitter;
 
 public class GameScene extends BasicScene {
@@ -66,7 +67,7 @@ public class GameScene extends BasicScene {
 
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < STAR_COUNT; i++) {
-            stars[i] = new Star(atlas);
+            stars[i] = new ParallaxStar(atlas, mainShip.getRefSpeed());
         }
 
         enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds);
