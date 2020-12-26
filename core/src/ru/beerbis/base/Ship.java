@@ -82,9 +82,8 @@ public abstract class Ship extends Sprite {
         return damage;
     }
 
-    public Vector2 getRefSpeed() {
-        return v;
-    }
+    public int getHp() { return hp; }
+    public Vector2 getRefSpeed() { return v; }
 
     private void shoot() {
         updateBulletPosition();
