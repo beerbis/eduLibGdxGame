@@ -52,6 +52,7 @@ public class GameScene extends BasicScene {
     private State state = State.PLAYING;
     private GameOver gameOver = new GameOver(atlas);
     private NewGameButton newGameButton;
+    private int frags;
 
     public GameScene(final Game game) {
         this.game = game;
@@ -154,7 +155,7 @@ public class GameScene extends BasicScene {
             bulletPool.updateActiveObjects(delta);
             mainShip.update(delta);
             enemyPool.updateActiveObjects(delta);
-            enemyEmitter.generate(delta);
+            enemyEmitter.generate(delta, frags);
         } else
             newGameButton.update(delta);
     }
@@ -175,6 +176,7 @@ public class GameScene extends BasicScene {
                 if (bullet.getOwner() == mainShip && enemy.isBulletCollision(bullet)) {
                     enemy.damage(bullet.getDamage());
                     bullet.destroy();
+                    if (enemy.isDestroyed()) frags++;
                 }
             }
         }
