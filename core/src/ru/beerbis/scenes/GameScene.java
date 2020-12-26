@@ -1,5 +1,6 @@
 package ru.beerbis.scenes;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
@@ -20,12 +21,15 @@ import ru.beerbis.sprite.Bullet;
 import ru.beerbis.sprite.Enemy;
 import ru.beerbis.sprite.GameOver;
 import ru.beerbis.sprite.MainShip;
+import ru.beerbis.sprite.NewGameButton;
 import ru.beerbis.sprite.Star;
 import ru.beerbis.utils.EnemyEmitter;
 
 public class GameScene extends BasicScene {
 
     private static final int STAR_COUNT = 128;
+    private final Game game;
+
     private enum State {PLAYING, GAME_OVER}
 
     private Texture bg = new Texture("textures/bg.png");;
@@ -46,6 +50,15 @@ public class GameScene extends BasicScene {
 
     private State state = State.PLAYING;
     private GameOver gameOver = new GameOver(atlas);
+    private NewGameButton newGameButton;
+
+    public GameScene(final Game game) {
+        this.game = game;
+        newGameButton = new NewGameButton(atlas, new Runnable() {
+            @Override
+            public void run() { game.setScreen(new GameScene(game)); }
+        });
+    }
 
     @Override
     public void show() {
@@ -114,12 +127,14 @@ public class GameScene extends BasicScene {
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         if (state == State.PLAYING) mainShip.touchDown(touch, pointer, button);
+        if (state == State.GAME_OVER) newGameButton.touchDown(touch, pointer, button);
         return super.touchDown(touch, pointer, button);
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         if (state == State.PLAYING) mainShip.touchUp(touch, pointer, button);
+        if (state == State.GAME_OVER) newGameButton.touchUp(touch, pointer, button);
         return super.touchUp(touch, pointer, button);
     }
 
@@ -139,7 +154,8 @@ public class GameScene extends BasicScene {
             mainShip.update(delta);
             enemyPool.updateActiveObjects(delta);
             enemyEmitter.generate(delta);
-        }
+        } else
+            newGameButton.update(delta);
     }
 
     private void checkCollision() {
@@ -190,6 +206,7 @@ public class GameScene extends BasicScene {
             mainShip.draw(batch);
         } else if (state == State.GAME_OVER) {
             gameOver.draw(batch);
+            newGameButton.draw(batch);
         }
         explosionPool.drawActiveObjects(batch);
         batch.end();
