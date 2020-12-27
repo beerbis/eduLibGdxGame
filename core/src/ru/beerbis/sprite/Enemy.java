@@ -1,6 +1,8 @@
 package ru.beerbis.sprite;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -19,13 +21,16 @@ public class Enemy extends Ship {
     private float warpingOutBottom;
     private float warpingInBottom;
     private float warpingInTop;
+    private HealthBar healthBar;
+    private Vector2 hbOffset = new Vector2();
 
-    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds) {
+    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Rect worldBounds, Texture healthBar) {
         super(bulletPool, explosionPool);
         this.worldBounds = worldBounds;
         this.v = new Vector2();
         this.v0 = new Vector2();
         this.bulletPos = new Vector2();
+        this.healthBar = new HealthBar(healthBar, pos, hbOffset);
     }
 
     @Override
@@ -49,6 +54,7 @@ public class Enemy extends Ship {
         }
 
         super.update(delta);
+        healthBar.update(delta);
         if (getBottom() < worldBounds.getBottom()) {
             destroy();
         }
@@ -57,6 +63,12 @@ public class Enemy extends Ship {
     @Override
     protected void updateBulletPosition() {
         bulletPos.set(pos.x, pos.y - getHalfHeight());
+    }
+
+    @Override
+    public void damage(int damage) {
+        super.damage(damage);
+        healthBar.setHealthLevel(getHp());
     }
 
     public void set(
@@ -81,6 +93,16 @@ public class Enemy extends Ship {
         this.reloadInterval = reloadInterval;
         this.v.set(v0);
         setHeightProportion(height);
+
+        hbOffset.set(getWidth() * 0.25f, getHalfHeight());
+        healthBar.set(getWidth() * 0.75f, hp);
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
+        if (warpedOut && healthBar.getHealthMax() > 1)
+            healthBar.draw(batch);
     }
 
     public void warpOut(float destBottom, float destTop) {

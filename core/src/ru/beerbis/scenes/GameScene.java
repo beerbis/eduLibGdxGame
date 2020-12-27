@@ -40,6 +40,7 @@ public class GameScene extends BasicScene {
 
     private final Game game;
     private Texture bg = new Texture("textures/bg.png");;
+    private Texture hb = new Texture("textures/healthBar.png");
     private Background background = new Background(bg);
 
     private TextureAtlas atlas = new TextureAtlas("textures/mainAtlas.tpack");;
@@ -82,7 +83,7 @@ public class GameScene extends BasicScene {
             stars[i] = new ParallaxStar(atlas, mainShip.getRefSpeed());
         }
 
-        enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds);
+        enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds, hb);
         enemyEmitter = new EnemyEmitter(atlas, worldBounds, bulletSound, enemyPool);
 
         bgMusic.setLooping(true);
@@ -112,6 +113,7 @@ public class GameScene extends BasicScene {
     @Override
     public void dispose() {
         bg.dispose();
+        hb.dispose();
         atlas.dispose();
         bulletPool.dispose();
         enemyPool.dispose();

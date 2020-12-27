@@ -41,7 +41,11 @@ public class Sprite extends Rect {
         regions = Regions.split(region, rows, cols, frames);
     }
 
-    public final void draw(SpriteBatch batch) {
+    public Sprite(Texture texture, int rows, int cols, int frames) {
+        regions = Regions.split(texture, rows, cols, frames);
+    }
+
+    public void draw(SpriteBatch batch) {
         batch.draw(
                 regions[frame],
                 getLeft(), getBottom(),
@@ -56,6 +60,12 @@ public class Sprite extends Rect {
         setSize(
                 height * regions[frame].getRegionWidth() / (float) regions[frame].getRegionHeight(),
                 height);
+    }
+
+    protected final void setWidthProportion(float width) {
+        setSize(
+                width,
+                width * regions[frame].getRegionHeight() / (float) regions[frame].getRegionWidth());
     }
 
     public void destroy()           { destroyed = true; }
