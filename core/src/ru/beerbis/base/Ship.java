@@ -82,6 +82,9 @@ public abstract class Ship extends Sprite {
         return damage;
     }
 
+    public int getHp() { return hp; }
+    public Vector2 getRefSpeed() { return v; }
+
     private void shoot() {
         updateBulletPosition();
         bulletSound.play(0.1f);

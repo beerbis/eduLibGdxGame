@@ -1,5 +1,6 @@
 package ru.beerbis.utils;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Regions {
@@ -28,4 +29,30 @@ public class Regions {
         }
         return regions;
     }
+
+    /**
+     * Разбивает Texture на фреймы
+     * @param texture регион
+     * @param rows количество строк
+     * @param cols количество столбцов
+     * @param frames количество фреймов
+     * @return массив регионов
+     */
+    public static TextureRegion[] split(Texture texture, int rows, int cols, int frames) {
+        if(texture == null) throw new RuntimeException("Split null texture");
+        TextureRegion[] regions = new TextureRegion[frames];
+        int tileWidth = texture.getWidth() / cols;
+        int tileHeight = texture.getHeight() / rows;
+
+        int frame = 0;
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                regions[frame] = new TextureRegion(texture, tileWidth * j, tileHeight * i, tileWidth, tileHeight);
+                if(frame == frames - 1) return regions;
+                frame++;
+            }
+        }
+        return regions;
+    }
+
 }

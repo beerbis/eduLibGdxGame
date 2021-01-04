@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import java.util.List;
 
@@ -23,16 +24,23 @@ import ru.beerbis.sprite.GameOver;
 import ru.beerbis.sprite.MainShip;
 import ru.beerbis.sprite.NewGameButton;
 import ru.beerbis.sprite.Star;
+import ru.beerbis.sprite.ParallaxStar;
 import ru.beerbis.utils.EnemyEmitter;
+import ru.beerbis.utils.Font;
 
 public class GameScene extends BasicScene {
 
     private static final int STAR_COUNT = 128;
-    private final Game game;
+    private static final float MARGIN = 0.01f;
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
 
     private enum State {PLAYING, GAME_OVER}
 
+    private final Game game;
     private Texture bg = new Texture("textures/bg.png");;
+    private Texture hb = new Texture("textures/healthBar.png");
     private Background background = new Background(bg);
 
     private TextureAtlas atlas = new TextureAtlas("textures/mainAtlas.tpack");;
@@ -51,6 +59,12 @@ public class GameScene extends BasicScene {
     private State state = State.PLAYING;
     private GameOver gameOver = new GameOver(atlas);
     private NewGameButton newGameButton;
+    private int frags;
+
+    private Font font = new Font("font/font.fnt", "font/font.png", 0.02f);
+    private StringBuilder sbFrags = new StringBuilder();
+    private StringBuilder sbHp = new StringBuilder();
+    private StringBuilder sbLevel = new StringBuilder();
 
     public GameScene(final Game game) {
         this.game = game;
@@ -66,10 +80,10 @@ public class GameScene extends BasicScene {
 
         stars = new Star[STAR_COUNT];
         for (int i = 0; i < STAR_COUNT; i++) {
-            stars[i] = new Star(atlas);
+            stars[i] = new ParallaxStar(atlas, mainShip.getRefSpeed());
         }
 
-        enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds);
+        enemyPool = new EnemyPool(bulletPool, explosionPool, worldBounds, hb);
         enemyEmitter = new EnemyEmitter(atlas, worldBounds, bulletSound, enemyPool);
 
         bgMusic.setLooping(true);
@@ -99,6 +113,7 @@ public class GameScene extends BasicScene {
     @Override
     public void dispose() {
         bg.dispose();
+        hb.dispose();
         atlas.dispose();
         bulletPool.dispose();
         enemyPool.dispose();
@@ -109,6 +124,8 @@ public class GameScene extends BasicScene {
         mainShip.dispose();
         explosionPool.dispose();
         explosionSound.dispose();
+
+        font.dispose();
         super.dispose();
     }
 
@@ -153,7 +170,7 @@ public class GameScene extends BasicScene {
             bulletPool.updateActiveObjects(delta);
             mainShip.update(delta);
             enemyPool.updateActiveObjects(delta);
-            enemyEmitter.generate(delta);
+            enemyEmitter.generate(delta, frags);
         } else
             newGameButton.update(delta);
     }
@@ -174,6 +191,7 @@ public class GameScene extends BasicScene {
                 if (bullet.getOwner() == mainShip && enemy.isBulletCollision(bullet)) {
                     enemy.damage(bullet.getDamage());
                     bullet.destroy();
+                    if (enemy.isDestroyed()) frags++;
                 }
             }
         }
@@ -209,6 +227,17 @@ public class GameScene extends BasicScene {
             newGameButton.draw(batch);
         }
         explosionPool.drawActiveObjects(batch);
+        printInfo();
         batch.end();
+    }
+
+
+    private void printInfo() {
+        sbFrags.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + MARGIN, worldBounds.getTop() - MARGIN);
+        sbHp.setLength(0);
+        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop() - MARGIN, Align.center);
+        sbLevel.setLength(0);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemyEmitter.getLevel()), worldBounds.getRight() - MARGIN, worldBounds.getTop() - MARGIN, Align.right);
     }
 }
